@@ -1,0 +1,20 @@
+language: node_js
+
+node_js: 14
+
+branches:
+  only:
+  - master
+
+cache:
+  directories:
+  - node_modules
+
+deploy:
+  provider: npm
+  email: vdsabev@gmail.com
+  api_key:
+    secure: TODO
+  on:
+    repo: vdsabev/lessttp
+  skip_cleanup: true

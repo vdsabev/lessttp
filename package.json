@@ -1,0 +1,19 @@
+{
+  "name": "lessttp",
+  "description": "Tiny tooling for headless HTTP-based lambda functions",
+  "keywords": [
+    "headless",
+    "http",
+    "lambda",
+    "serverless"
+  ],
+  "version": "0.1.0",
+  "author": "Vladimir Sabev (https://github.com/vdsabev)",
+  "repository": "git://github.com/vdsabev/lessttp",
+  "main": "./index.js",
+  "scripts": {},
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.61",
+    "ajv": "^6.12.4"
+  }
+}
