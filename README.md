@@ -76,7 +76,7 @@ exports.handler = http.function({
 ```
 
 ## Custom request validation
-Powerful validation based on [JSON schema](http://json-schema.org/understanding-json-schema):
+Validate request body and headers using powerful [JSON schemas](http://json-schema.org/understanding-json-schema):
 ```js
 const http = require('lessttp')
 const StarWars = require('./services/StarWars')
@@ -172,6 +172,40 @@ exports.handler = http.function({
       }
     }
   }
+})
+```
+
+## RESTful routing
+Easily combine multiple handlers to create REST endpoints:
+```js
+const http = require('lessttp')
+const StarWars = require('./services/StarWars')
+
+exports.handler = http.resource({
+  async get() {
+    const jedi = await StarWars.getJedi()
+    return {
+      body: jedi,
+    }
+  },
+  post: {
+    request: {
+      body: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          side: { type: 'string', enum: ['light', 'neutral', 'dark'] },
+        },
+        required: ['name', 'side'],
+      }
+    },
+    async handler(request) {
+      const jedi = await StarWars.createJedi(request.body)
+      return {
+        body: jedi,
+      }
+    },
+  },
 })
 ```
 

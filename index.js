@@ -12,6 +12,7 @@ const {
 
 const http = exports
 
+// Function
 /** @returns {Handler} */
 http.function = (/** @type {Handler | Controller} */ handlerOrController) => {
   const controller =
@@ -34,7 +35,6 @@ http.function = (/** @type {Handler | Controller} */ handlerOrController) => {
   const handlers = [...middleware, controller.handler]
 
   return async (request, context) => {
-    console.log(`request.url`, request.url)
     try {
       for (const handler of handlers) {
         const response = await handler(request, context)
@@ -74,5 +74,38 @@ http.function = (/** @type {Handler | Controller} */ handlerOrController) => {
         'Content-Type': 'text/html; charset=utf-8',
       },
     }
+  }
+}
+
+// Resource
+/** @returns {Handler} */
+http.resource = (
+  /** @type {Record<string, Handler | Omit<Controller, 'method'>>} */ resource
+) => {
+  /** @type {Record<string, Handler>} */
+  const handlers = Object.keys(resource).reduce((controllers, key) => {
+    const handlerOrController = resource[key]
+    const method = key.toUpperCase()
+    return {
+      ...controllers,
+      [key]: http.function(
+        typeof handlerOrController === 'function'
+          ? { method, handler: handlerOrController }
+          : { ...handlerOrController, method }
+      ),
+    }
+  }, {})
+
+  return async (request, context) => {
+    const handler = handlers[request.method.toUpperCase()]
+    if (!handler) {
+      const allowedMethods = Object.keys(handlers).join(', ')
+      return {
+        statusCode: 405,
+        headers: { Allow: allowedMethods },
+      }
+    }
+
+    return handler(request, context)
   }
 }
