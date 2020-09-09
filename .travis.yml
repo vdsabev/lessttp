@@ -14,7 +14,7 @@ deploy:
   provider: npm
   email: vdsabev@gmail.com
   api_key:
-    secure: TODO
+    secure: Gp4lPzlfue1fzTtDK7xbcv3UnrRqPniN+QENB9l2XRuLsLU0FzBpOvp40+3o+G73DOvJ0ejuP4PliR9Gwkv+RQuBDOX1or2iFj5oCdRqGA3J6v09VqDK0lIGtHmXJ3zjQ5Pxj3rva3fVdUWdStMSqTrYEvL9KAWzl0Yhldp6wCXuHlSbLIwBHMqh0KQB8ldPyAgGNBYWMfeEc5dRQoXHgvri2GmnwVHi9kYx2z5zzbC6RKrWUnXy1Me9Prk0+oOMjDjcbUbSKUb1Z/4HZ8VtP8SOra0TRMOhoM77XgCOD/YEFuawir2smHbhQPDcjN1KipZ2URLwAzfqwYZ93zjb4Tvp4h1pNCBYHO7X7mGKP1tA5yPi8BulY8vj3i3YJUeC+ASOrIJq61s+BZwp8/xgGfEDrZ3IYs7sp+klWFCVHA7LOXAPpxYi8z+3tLOrtWXrB2Uog1ugitVaIA9kkWkBQS3E126oMhokO2WRpIPUoV2GuhbUZ2kOmhLT5bsINTimVOumW27r+dQ11fggAIXDCSTmAd+KON4N0EvyIbSz/AE8feVTywjxtJIRSp6VtGs/xDZoaWAcA9NTqPIVbbqqo4ZX2OAwIKxXsAg3sUcp1F0s6ICPeEoPifVTjXkmZVtKvMP2u9oOQ+y6NH7tjCscQSzFUsOlbb3Rthx1dPSCGB0=
   on:
     repo: vdsabev/lessttp
   skip_cleanup: true
