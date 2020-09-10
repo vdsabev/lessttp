@@ -58,6 +58,24 @@ exports.handler = http.function(async (request) => {
 })
 ```
 
+## Custom path parameters
+```js
+const http = require('lessttp')
+const StarWars = require('./services/StarWars')
+const baseUrl = '/.netlify/functions'
+
+exports.handler = http.function({
+  path: `${baseUrl}/jedi/:id`,
+  async handler(request) {
+    const { id } = request.params
+    const jedi = await (id ? StarWars.getJediById(id) : StarWars.getJedi())
+    return {
+      body: jedi,
+    }
+  },
+})
+```
+
 ## Custom HTTP method
 The request body is automatically parsed as JSON when available:
 ```js

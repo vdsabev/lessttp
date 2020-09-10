@@ -2,6 +2,7 @@ import { APIGatewayProxyEvent } from '@types/aws-lambda'
 
 export type Controller = {
   method?: string
+  path?: string
   request?: RequestValidation
   middleware?: Handler[] | (() => Handler[])
   handler: Handler
@@ -23,6 +24,7 @@ export interface Handler {
 export type Request = APIGatewayProxyEvent & {
   body: any
   method: APIGatewayProxyEvent['httpMethod']
+  params: Record<string, string>
   query: APIGatewayProxyEvent['queryStringParameters']
 }
 

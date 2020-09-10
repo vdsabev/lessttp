@@ -3,6 +3,7 @@ const {
   alias,
   validateHttpMethod,
   parseBody,
+  parseParams,
   validateRequest,
 } = require('./middleware')
 
@@ -29,6 +30,7 @@ http.function = (/** @type {Handler | Controller} */ handlerOrController) => {
           alias({ httpMethod: 'method', queryStringParameters: 'query' }),
           validateHttpMethod(controller.method || 'GET'),
           parseBody(),
+          parseParams(controller.path),
           validateRequest(controller.request),
         ]
 

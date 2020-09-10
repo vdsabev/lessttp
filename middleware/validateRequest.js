@@ -5,9 +5,9 @@ const Ajv = require('ajv')
 const validator = new Ajv({ allErrors: true, coerceTypes: true })
 
 /** @type {import('../types.d').Middleware<[RequestValidation]>}  */
-const validateRequest = (request) => {
-  const validate = request
-    ? validator.compile({ type: 'object', properties: request })
+const validateRequest = (requestValidation) => {
+  const validate = requestValidation
+    ? validator.compile({ type: 'object', properties: requestValidation })
     : null
 
   return (request, context) => {
