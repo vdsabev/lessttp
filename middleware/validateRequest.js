@@ -27,4 +27,12 @@ class RequestValidationError extends Error {
   response = {
     statusCode: 400,
   }
+
+  constructor(message) {
+    super(message)
+    this.response = {
+      statusCode: 400,
+      body: message
+    }
+  }
 }

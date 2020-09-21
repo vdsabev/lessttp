@@ -1,8 +1,15 @@
 import { APIGatewayProxyEvent } from '@types/aws-lambda'
 
-export type Controller = {
+export type HttpFunction = Controller & {
   method?: string
   path?: string
+}
+
+export type HttpResource = Record<string, Handler | Controller> & {
+  path?: string
+}
+
+type Controller = {
   request?: RequestValidation
   middleware?: Handler[] | (() => Handler[])
   handler: Handler

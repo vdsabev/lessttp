@@ -193,7 +193,7 @@ exports.handler = http.function({
 })
 ```
 
-## RESTful routing
+## RESTful paths
 Easily combine multiple handlers to create REST endpoints:
 ```js
 const http = require('lessttp')

@@ -7,19 +7,18 @@ const {
   validateRequest,
 } = require('./middleware')
 
-/** @typedef {import('./types.d').Controller} Controller */
 /** @typedef {import('./types.d').Handler} Handler */
-/** @typedef {import('./types.d').Response} Response */
+/** @typedef {import('./types.d').HttpFunction} HttpFunction */
+/** @typedef {import('./types.d').HttpResource} HttpResource */
 
 const http = exports
 
 // Function
 /** @returns {Handler} */
-http.function = (/** @type {Handler | Controller} */ handlerOrController) => {
-  const controller =
-    typeof handlerOrController === 'function'
-      ? { handler: handlerOrController }
-      : handlerOrController
+http.function = (/** @type {Handler | HttpFunction} */ handlerOrFunction) => {
+  const controller = isHandler(handlerOrFunction)
+    ? { handler: handlerOrFunction }
+    : handlerOrFunction
 
   const middleware =
     typeof controller.middleware === 'function'
@@ -81,18 +80,16 @@ http.function = (/** @type {Handler | Controller} */ handlerOrController) => {
 
 // Resource
 /** @returns {Handler} */
-http.resource = (
-  /** @type {Record<string, Handler | Omit<Controller, 'method'>>} */ resource
-) => {
+http.resource = (/** @type {HttpResource} */ resource) => {
   /** @type {Record<string, Handler>} */
-  const handlers = Object.keys(resource).reduce((controllers, key) => {
+  const handlers = Object.keys(resource).reduce((handlers, key) => {
     const handlerOrController = resource[key]
     const method = key.toUpperCase()
     return {
-      ...controllers,
+      ...handlers,
       [key]: http.function(
-        typeof handlerOrController === 'function'
-          ? { method, handler: handlerOrController }
+        isHandler(handlerOrController)
+          ? { handler: handlerOrController, method }
           : { ...handlerOrController, method }
       ),
     }
@@ -111,3 +108,7 @@ http.resource = (
     return handler(request, context)
   }
 }
+
+/** @returns {handlerOrController is Handler} */
+const isHandler = (/** @type {Handler | any} */ handlerOrController) =>
+  typeof handlerOrController === 'function'
