@@ -24,8 +24,8 @@ export interface Middleware<Args = []> {
 export interface Handler {
   (request: Request, context: Context):
     | void
-    | Response
-    | Promise<void | Response>
+    | Partial<Response>
+    | Promise<void | Partial<Response>>
 }
 
 export type Request = APIGatewayProxyEvent & {
@@ -38,7 +38,8 @@ export type Request = APIGatewayProxyEvent & {
 export type Context = Record<string, any>
 
 export type Response = {
-  statusCode?: number
-  body?: any
-  headers?: Record<string, string>
+  statusCode: number
+  body: any
+  headers: Record<string, string>
+  isBase64Encoded: boolean
 }

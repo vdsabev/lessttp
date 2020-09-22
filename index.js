@@ -59,7 +59,9 @@ http.function = (/** @type {Handler | HttpFunction} */ handlerOrFunction) => {
       // Built-in error handling
       const statusCode = (error.response && error.response.statusCode) || 500
       const body =
-        (error.response && error.response.body) || statuses[statusCode]
+        (error.response && error.response.body) ||
+        error.message ||
+        statuses[statusCode]
       return {
         ...error.response,
         statusCode,
