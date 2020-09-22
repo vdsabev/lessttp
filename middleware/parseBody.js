@@ -1,7 +1,7 @@
 /** @type {import('../types.d').Middleware} */
 const parseBody = () => {
   return async (request, context) => {
-    if (request.body) {
+    if (request.body && typeof request.body === 'string') {
       try {
         request.body = JSON.parse(request.body)
       } catch (error) {
