@@ -23,7 +23,7 @@ Minimum viable async setup for [Netlify Functions](https://docs.netlify.com/func
 - `Content-Type=application/json` when you return a JSON object in the body
 - 200 success status when there are no errors
 - Error handling
-- Vaidates that `GET` HTTP method is used
+- Validates that `GET` HTTP method is used
 
 ```js
 const http = require('lessttp')
