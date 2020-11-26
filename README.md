@@ -120,7 +120,7 @@ exports.handler = http.function({
 })
 ```
 
-## Custom usage of middleware
+## Custom middleware
 You can use the built-in middleware functions, or write your own:
 ```js
 const http = require('lessttp')
