@@ -26,7 +26,7 @@ const http = require('lessttp')
 const StarWars = require('./services/StarWars')
 
 exports.handler = http.function(async (request) => {
-  const allJedi = await StarWars.getAllJedi()
+  const allJedi = await StarWars.queryJedi()
   return {
     body: allJedi,
   }
@@ -40,7 +40,7 @@ const StarWars = require('./services/StarWars')
 
 exports.handler = http.function(async (request) => {
   try {
-    const allJedi = await StarWars.getAllJedi()
+    const allJedi = await StarWars.queryJedi()
     return {
       body: allJedi,
     }
@@ -64,7 +64,7 @@ exports.handler = http.function({
   path: `${baseUrl}/jedi/:id`,
   async handler(request) {
     const { id } = request.params
-    const jedi = await (id ? StarWars.getJediById(id) : StarWars.getAllJedi())
+    const jedi = await (id ? StarWars.getJediById(id) : StarWars.queryJedi())
     return {
       body: jedi,
     }
@@ -72,8 +72,9 @@ exports.handler = http.function({
 })
 ```
 
-## Query string parsing
-The request query string is automatically parsed as JSON using `qs.parse`:
+## Parsing deeply nested query objects
+While the request query string is already parsed as JSON, the built-in middleware further uses `qs.parse` which supports deeply nested objects.
+
 ```js
 const http = require('lessttp')
 const StarWars = require('./services/StarWars')
@@ -82,8 +83,8 @@ const baseUrl = '/.netlify/functions'
 exports.handler = http.function({
   path: `${baseUrl}/jedi`,
   async handler(request) {
-    const { id } = request.query
-    const jedi = await (id ? StarWars.getJediById(id) : StarWars.getAllJedi())
+    const { id, filter: { name, side } } = request.query
+    const jedi = await (id ? StarWars.getJediById(id) : StarWars.queryJedi({ name, side }))
     return {
       body: jedi,
     }
@@ -144,7 +145,7 @@ const StarWars = require('./services/StarWars')
 
 exports.handler = http.resource({
   async get() {
-    const allJedi = await StarWars.getAllJedi()
+    const allJedi = await StarWars.queryJedi()
     return {
       body: allJedi,
     }
