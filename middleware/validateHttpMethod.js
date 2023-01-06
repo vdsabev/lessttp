@@ -1,7 +1,7 @@
 /** @type {import('../types.d').Middleware<[string]>}  */
 const validateHttpMethod = (allowedMethod) => {
   return async (request, context) => {
-    if (request.method.toUpperCase() !== allowedMethod.toUpperCase()) {
+    if (request.httpMethod.toUpperCase() !== allowedMethod.toUpperCase()) {
       throw new InvalidHttpMethodError(allowedMethod);
     }
   };

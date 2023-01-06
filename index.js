@@ -4,6 +4,7 @@ const {
   validateHttpMethod,
   parseBody,
   parseParams,
+  parseQuery,
   validateRequest,
 } = require('./middleware');
 
@@ -26,10 +27,14 @@ http.function = (/** @type {Handler | HttpFunction} */ handlerOrFunction) => {
       : 'middleware' in controller
       ? controller.middleware
       : [
-          alias({ httpMethod: 'method', queryStringParameters: 'query' }),
+          // Validate HTTP method first to reject invalid requests before any other processing
           validateHttpMethod(controller.method || 'GET'),
           parseBody(),
           parseParams(controller.path),
+          parseQuery(),
+          // Order is significant - make sure aliasing comes before validation,
+          // but after middleware that might change the request body, params, query, etc.
+          alias({ httpMethod: 'method', queryStringParameters: 'query' }),
           validateRequest(controller.request),
         ];
 
