@@ -2,9 +2,9 @@
 const alias = (config = {}) => {
   return (request, context) => {
     Object.entries(config).forEach(([key, value]) => {
-      request[value] = request[key]
-    })
-  }
-}
+      request[value] = request[key];
+    });
+  };
+};
 
-module.exports = alias
+module.exports = alias;

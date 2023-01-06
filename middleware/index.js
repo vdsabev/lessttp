@@ -4,4 +4,4 @@ module.exports = {
   parseBody: require('./parseBody'),
   parseParams: require('./parseParams'),
   validateRequest: require('./validateRequest'),
-}
+};

@@ -1,24 +1,24 @@
-const { STATUS_CODES: statuses } = require('http')
+const { STATUS_CODES: statuses } = require('http');
 const {
   alias,
   validateHttpMethod,
   parseBody,
   parseParams,
   validateRequest,
-} = require('./middleware')
+} = require('./middleware');
 
 /** @typedef {import('./types.d').Handler} Handler */
 /** @typedef {import('./types.d').HttpFunction} HttpFunction */
 /** @typedef {import('./types.d').HttpResource} HttpResource */
 
-const http = exports
+const http = exports;
 
 // Function
 /** @returns {Handler} */
 http.function = (/** @type {Handler | HttpFunction} */ handlerOrFunction) => {
   const controller = isHandler(handlerOrFunction)
     ? { handler: handlerOrFunction }
-    : handlerOrFunction
+    : handlerOrFunction;
 
   const middleware =
     typeof controller.middleware === 'function'
@@ -31,16 +31,16 @@ http.function = (/** @type {Handler | HttpFunction} */ handlerOrFunction) => {
           parseBody(),
           parseParams(controller.path),
           validateRequest(controller.request),
-        ]
+        ];
 
-  const handlers = [...middleware, controller.handler]
+  const handlers = [...middleware, controller.handler];
 
   return async (request, context) => {
     try {
       for (const handler of handlers) {
-        const response = await handler(request, context)
+        const response = await handler(request, context);
         if (response) {
-          const isJSON = response.body && typeof response.body === 'object'
+          const isJSON = response.body && typeof response.body === 'object';
           return {
             statusCode: response.body ? 200 : 204,
             ...response,
@@ -51,22 +51,22 @@ http.function = (/** @type {Handler | HttpFunction} */ handlerOrFunction) => {
                 : 'text/html; charset=utf-8',
               ...response.headers,
             },
-          }
+          };
         }
         // Otherwise continues to the next handler automatically
       }
     } catch (error) {
       // Built-in error handling
-      const statusCode = (error.response && error.response.statusCode) || 500
+      const statusCode = (error.response && error.response.statusCode) || 500;
       const body =
         (error.response && error.response.body) ||
         error.message ||
-        statuses[statusCode]
+        statuses[statusCode];
       return {
         ...error.response,
         statusCode,
         body,
-      }
+      };
     }
 
     // No handlers returned a response, return a 404 Not Found error
@@ -76,41 +76,41 @@ http.function = (/** @type {Handler | HttpFunction} */ handlerOrFunction) => {
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
       },
-    }
-  }
-}
+    };
+  };
+};
 
 // Resource
 /** @returns {Handler} */
 http.resource = (/** @type {HttpResource} */ resource) => {
   /** @type {Record<string, Handler>} */
   const handlers = Object.keys(resource).reduce((handlers, key) => {
-    const handlerOrController = resource[key]
-    const method = key.toUpperCase()
+    const handlerOrController = resource[key];
+    const method = key.toUpperCase();
     return {
       ...handlers,
       [key]: http.function(
         isHandler(handlerOrController)
           ? { handler: handlerOrController, method }
-          : { ...handlerOrController, method }
+          : { ...handlerOrController, method },
       ),
-    }
-  }, {})
+    };
+  }, {});
 
   return async (request, context) => {
-    const handler = handlers[request.method.toUpperCase()]
+    const handler = handlers[request.method.toUpperCase()];
     if (!handler) {
-      const allowedMethods = Object.keys(handlers).join(', ')
+      const allowedMethods = Object.keys(handlers).join(', ');
       return {
         statusCode: 405,
         headers: { Allow: allowedMethods },
-      }
+      };
     }
 
-    return handler(request, context)
-  }
-}
+    return handler(request, context);
+  };
+};
 
 /** @returns {handlerOrController is Handler} */
 const isHandler = (/** @type {Handler | any} */ handlerOrController) =>
-  typeof handlerOrController === 'function'
+  typeof handlerOrController === 'function';

@@ -4,11 +4,11 @@ node_js: 14
 
 branches:
   only:
-  - master
+    - master
 
 cache:
   directories:
-  - node_modules
+    - node_modules
 
 deploy:
   provider: npm
