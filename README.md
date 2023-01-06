@@ -1,11 +1,6 @@
-[![Build Status][build-badge]][build]
-[![Code Coverage][coverage-badge]][coverage]
-[![downloads][downloads-badge]][npmcharts]
 [![version][version-badge]][package]
 [![MIT License][license-badge]][license]
-
-[![size][size-badge]][unpkg-dist]
-[![gzip size][gzip-badge]][unpkg-dist]
+[![downloads][downloads-badge]][npmcharts]
 
 <h1 align="center">
   lessttp ⚡
@@ -23,6 +18,7 @@ Minimum viable async setup for [Netlify Functions](https://docs.netlify.com/func
 - `Content-Type=application/json` when you return a JSON object in the body
 - 200 success status when there are no errors
 - Error handling
+- Parses query string as JSON
 - Validates that `GET` HTTP method is used
 
 ```js
@@ -30,9 +26,9 @@ const http = require('lessttp')
 const StarWars = require('./services/StarWars')
 
 exports.handler = http.function(async (request) => {
-  const jedi = await StarWars.getJedi()
+  const allJedi = await StarWars.getAllJedi()
   return {
-    body: jedi,
+    body: allJedi,
   }
 })
 ```
@@ -44,9 +40,9 @@ const StarWars = require('./services/StarWars')
 
 exports.handler = http.function(async (request) => {
   try {
-    const jedi = await StarWars.getJedi()
+    const allJedi = await StarWars.getAllJedi()
     return {
-      body: jedi,
+      body: allJedi,
     }
   } catch (error) {
     console.error(error)
@@ -68,7 +64,26 @@ exports.handler = http.function({
   path: `${baseUrl}/jedi/:id`,
   async handler(request) {
     const { id } = request.params
-    const jedi = await (id ? StarWars.getJediById(id) : StarWars.getJedi())
+    const jedi = await (id ? StarWars.getJediById(id) : StarWars.getAllJedi())
+    return {
+      body: jedi,
+    }
+  },
+})
+```
+
+## Query string parsing
+The request query string is automatically parsed as JSON using `qs.parse`:
+```js
+const http = require('lessttp')
+const StarWars = require('./services/StarWars')
+const baseUrl = '/.netlify/functions'
+
+exports.handler = http.function({
+  path: `${baseUrl}/jedi`,
+  async handler(request) {
+    const { id } = request.query
+    const jedi = await (id ? StarWars.getJediById(id) : StarWars.getAllJedi())
     return {
       body: jedi,
     }
@@ -94,7 +109,7 @@ exports.handler = http.function({
 ```
 
 ## Custom request validation
-Validate request body and headers using powerful [JSON schemas](http://json-schema.org/understanding-json-schema):
+Validate request body, headers, params, or query using powerful [JSON schemas](http://json-schema.org/understanding-json-schema):
 ```js
 const http = require('lessttp')
 const StarWars = require('./services/StarWars')
@@ -109,6 +124,7 @@ exports.handler = http.function({
         side: { type: 'string', enum: ['light', 'neutral', 'dark'] },
       },
       required: ['name', 'side'],
+      additionalProperties: false,
     }
   },
   async handler(request) {
@@ -117,6 +133,41 @@ exports.handler = http.function({
       body: jedi,
     }
   }
+})
+```
+
+## RESTful paths
+Easily combine multiple handlers to create REST endpoints:
+```js
+const http = require('lessttp')
+const StarWars = require('./services/StarWars')
+
+exports.handler = http.resource({
+  async get() {
+    const allJedi = await StarWars.getAllJedi()
+    return {
+      body: allJedi,
+    }
+  },
+  post: {
+    request: {
+      body: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          side: { type: 'string', enum: ['light', 'neutral', 'dark'] },
+        },
+        required: ['name', 'side'],
+        additionalProperties: false,
+      }
+    },
+    async handler(request) {
+      const jedi = await StarWars.createJedi(request.body)
+      return {
+        body: jedi,
+      }
+    },
+  },
 })
 ```
 
@@ -193,50 +244,11 @@ exports.handler = http.function({
 })
 ```
 
-## RESTful paths
-Easily combine multiple handlers to create REST endpoints:
-```js
-const http = require('lessttp')
-const StarWars = require('./services/StarWars')
-
-exports.handler = http.resource({
-  async get() {
-    const jedi = await StarWars.getJedi()
-    return {
-      body: jedi,
-    }
-  },
-  post: {
-    request: {
-      body: {
-        type: 'object',
-        properties: {
-          name: { type: 'string' },
-          side: { type: 'string', enum: ['light', 'neutral', 'dark'] },
-        },
-        required: ['name', 'side'],
-      }
-    },
-    async handler(request) {
-      const jedi = await StarWars.createJedi(request.body)
-      return {
-        body: jedi,
-      }
-    },
-  },
-})
-```
-
-[build-badge]: https://img.shields.io/travis/vdsabev/lessttp.svg?style=flat-square
-[build]: https://travis-ci.org/vdsabev/lessttp
-[coverage-badge]: https://img.shields.io/codecov/c/github/vdsabev/lessttp.svg?style=flat-square
-[coverage]: https://codecov.io/github/vdsabev/lessttp
 [version-badge]: https://img.shields.io/npm/v/lessttp.svg?style=flat-square
 [package]: https://www.npmjs.com/package/lessttp
-[downloads-badge]: https://img.shields.io/npm/dm/lessttp.svg?style=flat-square
-[npmcharts]: http://npmcharts.com/compare/lessttp
+
 [license-badge]: https://img.shields.io/npm/l/lessttp.svg?style=flat-square
 [license]: https://github.com/vdsabev/lessttp/blob/master/LICENSE.md
-[gzip-badge]: http://img.badgesize.io/https://unpkg.com/lessttp/index.min.js?compression=gzip&label=gzip%20size&style=flat-square
-[size-badge]: http://img.badgesize.io/https://unpkg.com/lessttp/index.min.js?label=size&style=flat-square
-[unpkg-dist]: https://unpkg.com/lessttp
+
+[downloads-badge]: https://img.shields.io/npm/dm/lessttp.svg?style=flat-square
+[npmcharts]: http://npmcharts.com/compare/lessttp
