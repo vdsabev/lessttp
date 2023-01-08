@@ -14,7 +14,7 @@ const validateRequest = (requestValidation) => {
     const isValid = !validate || validate(request);
     if (!isValid) {
       const message = validate.errors
-        .map((error) => `request${error.instancePath.relace(/\//g, '.')} ${error.message}`)
+        .map((error) => `request${error.instancePath.replace(/\//g, '.')} ${error.message}`)
         .join('\n');
       throw new RequestValidationError(message);
     }
