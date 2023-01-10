@@ -18,7 +18,7 @@ Minimum viable async setup for [Netlify Functions](https://docs.netlify.com/func
 - `Content-Type=application/json` when you return a JSON object in the body
 - 200 success status when there are no errors
 - Error handling
-- Parses query string as JSON
+- Parses deeply nested query string objects as JSON
 - Validates that `GET` HTTP method is used
 
 ```js
