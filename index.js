@@ -24,18 +24,21 @@ http.function = (/** @type {Handler | HttpFunction} */ handlerOrFunction) => {
   const middleware =
     typeof controller.middleware === 'function'
       ? controller.middleware()
-      : 'middleware' in controller
+      : Array.isArray(controller.middleware) || controller.middleware === null
       ? controller.middleware
       : [
           // Validate HTTP method first to reject invalid requests before any other processing
-          validateHttpMethod(controller.method || 'GET'),
-          parseBody(),
-          parseParams(controller.path),
-          parseQuery(),
+          controller.middleware?.validateHttpMethod ||
+            validateHttpMethod(controller.method || 'GET'),
+          controller.middleware?.parseBody || parseBody(),
+          controller.middleware?.parseParams || parseParams(controller.path),
+          controller.middleware?.parseQuery || parseQuery(),
           // Order is significant - make sure aliasing comes before validation,
           // but after middleware that might change the request body, params, query, etc.
-          alias({ httpMethod: 'method', queryStringParameters: 'query' }),
-          validateRequest(controller.request),
+          controller.middleware?.alias ||
+            alias({ httpMethod: 'method', queryStringParameters: 'query' }),
+          controller.middleware?.validateRequest ||
+            validateRequest(controller.request),
         ];
 
   const handlers = [...middleware, controller.handler];

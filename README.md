@@ -172,8 +172,38 @@ exports.handler = http.resource({
 })
 ```
 
-## Custom middleware
-You can use the built-in middleware functions, or write your own:
+## Override individual middleware functions
+You can override individual functions by key:
+```js
+const http = require('lessttp')
+const StarWars = require('./services/StarWars')
+
+exports.handler = http.function({
+  middleware: {
+    async parseBody(request) {
+      if (request.body) {
+        try {
+          request.body = JSON.parse(request.body)
+        } catch (error) {
+          return {
+            statusCode: 400,
+            body: 'You were supposed to bring balance to the Force!'
+          }
+        }
+      }
+    }
+  },
+  async handler(request) {
+    const jedi = await StarWars.createJedi(request.body)
+    return {
+      body: jedi,
+    }
+  }
+})
+```
+
+## Override all middleware
+Replace the middleware array entirely:
 ```js
 const http = require('lessttp')
 const { alias, validateHttpMethod } = require('lessttp/middleware')

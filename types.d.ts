@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent } from '@types/aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 
 export type HttpFunction = Controller & {
   method?: string;
@@ -11,13 +11,13 @@ export type HttpResource = Record<string, Handler | Controller> & {
 
 type Controller = {
   request?: RequestValidation;
-  middleware?: Handler[] | (() => Handler[]);
+  middleware?: Handler[] | Record<string, Handler> | (() => Handler[]);
   handler: Handler;
 };
 
 export type RequestValidation = Record<string, any>;
 
-export interface Middleware<Args = []> {
+export interface Middleware<Args extends [] = []> {
   (...args: Args): Handler;
 }
 
